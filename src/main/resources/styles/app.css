@@ -1,0 +1,445 @@
+/* Adapted from the supplied globals.css and React UI components.
+ * JavaFX looked-up colors replace CSS custom properties / Tailwind tokens.
+ */
+.root {
+    -neutral-0: #ffffff;
+    -neutral-50: #fafafa;
+    -neutral-100: #f5f5f5;
+    -neutral-200: #e5e5e5;
+    -neutral-300: #d4d4d4;
+    -neutral-500: #737373;
+    -neutral-600: #525252;
+    -neutral-900: #171717;
+    -primary-50: #fff5f9;
+    -primary-100: #fce7f0;
+    -primary-200: #f7cddd;
+    -primary-300: #f0abc8;
+    -primary-400: #e58bb4;
+    -primary-500: #d66a9e;
+    -primary-600: #b94d82;
+    -primary-700: #983d6a;
+    -primary-800: #71314f;
+    -primary-900: #412732;
+    -primary-950: #2b2026;
+    /* Auxiliary palettes: 50 = pale, 200 = soft, 400 = dark-theme text,
+     * 500/600 = accents, 800/950 = dark surfaces. Use as looked-up colors. */
+    -red-50: #fef2f2;
+    -red-200: #fecaca;
+    -red-400: #f87171;
+    -red-500: #ef4444;
+    -red-600: #dc2626;
+    -red-800: #991b1b;
+    -red-950: #450a0a;
+    -purple-50: #faf5ff;
+    -purple-200: #e9d5ff;
+    -purple-400: #c084fc;
+    -purple-500: #a855f7;
+    -purple-600: #9333ea;
+    -purple-800: #6b21a8;
+    -purple-950: #3b0764;
+    -green-50: #f0fdf4;
+    -green-200: #bbf7d0;
+    -green-400: #4ade80;
+    -green-500: #22c55e;
+    -green-600: #16a34a;
+    -green-800: #166534;
+    -green-950: #052e16;
+    -yellow-50: #fefce8;
+    -yellow-200: #fef08a;
+    -yellow-400: #facc15;
+    -yellow-500: #eab308;
+    -yellow-600: #ca8a04;
+    -yellow-800: #854d0e;
+    -yellow-950: #422006;
+    -orange-50: #fff7ed;
+    -orange-200: #fed7aa;
+    -orange-400: #fb923c;
+    -orange-500: #f97316;
+    -orange-600: #ea580c;
+    -orange-800: #9a3412;
+    -orange-950: #431407;
+    -blue-50: #eff6ff;
+    -blue-200: #bfdbfe;
+    -blue-400: #60a5fa;
+    -blue-500: #3b82f6;
+    -blue-600: #2563eb;
+    -blue-800: #1e40af;
+    -blue-950: #172554;
+    -cyan-50: #ecfeff;
+    -cyan-200: #a5f3fc;
+    -cyan-400: #22d3ee;
+    -cyan-500: #06b6d4;
+    -cyan-600: #0891b2;
+    -cyan-800: #155e75;
+    -cyan-950: #083344;
+    -background-default: #171717;
+    -background-neutral: #262626;
+    -background-primary: -primary-950;
+    -foreground-default: #fafafa;
+    -foreground-muted: #a3a3a3;
+    -foreground-brand: -primary-400;
+    -border-default: #404040;
+    -border-primary: -primary-800;
+    /* 600 provides readable white button labels on the rose background. */
+    -bg-btn-primary: -primary-600;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 13px;
+    -fx-base: -background-neutral;
+    -fx-background: -background-default;
+    -fx-control-inner-background: -background-neutral;
+    -fx-text-background-color: -foreground-default;
+    -fx-accent: -primary-600;
+    -fx-focus-color: -primary-500;
+    -fx-faint-focus-color: transparent;
+}
+.app, .scroll-pane, .scroll-pane > .viewport {
+    -fx-background-color: -background-default;
+}
+.label, .check-box {
+    -fx-text-fill: -foreground-default;
+}
+.topbar {
+    -fx-padding: 10 24;
+    -fx-background-color: -background-neutral;
+    -fx-border-color: transparent transparent -border-default transparent;
+}
+.eyebrow {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -foreground-muted;
+}
+.brand {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -foreground-brand;
+}
+.badge {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -foreground-brand;
+    -fx-background-color: -background-primary;
+    -fx-padding: 9 16;
+    -fx-background-radius: 999;
+}
+.body {
+    -fx-padding: 18 32 0 32;
+}
+.title {
+    -fx-font-size: 29px;
+    -fx-font-weight: bold;
+}
+.muted {
+    -fx-text-fill: -foreground-muted;
+    -fx-font-size: 12px;
+}
+.card {
+    -fx-background-color: -background-neutral;
+    -fx-background-radius: 8;
+    -fx-border-color: -border-default;
+    -fx-border-radius: 8;
+    -fx-effect: null;
+}
+.section-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+.section-header {
+    -fx-padding: 17 20;
+}
+.columns {
+    -fx-padding: 9 20;
+    -fx-background-color: #303030;
+    -fx-font-size: 10px;
+}
+.columns .label {
+    -fx-text-fill: -foreground-muted;
+}
+.preset-row {
+    -fx-padding: 10 20;
+    -fx-border-color: #353535 transparent transparent transparent;
+}
+.preset-row:selected {
+    -fx-background-color: -background-primary;
+}
+.preset-row:hover {
+    -fx-background-color: #303030;
+}
+.preset-row:selected:hover {
+    -fx-background-color: -primary-900;
+}
+.preset-row .label {
+    -fx-font-family: "Consolas";
+    -fx-font-size: 12px;
+    -fx-text-fill: #d4d4d4;
+}
+.check-box .box {
+    -fx-background-color: -background-neutral;
+    -fx-border-color: -border-default;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 4;
+}
+.check-box:selected .box {
+    -fx-background-color: -bg-btn-primary;
+    -fx-border-color: -bg-btn-primary;
+}
+.check-box:selected .mark {
+    -fx-background-color: -neutral-0;
+}
+.check-box:focused .box {
+    -fx-effect: null;
+    -fx-border-color: -primary-500;
+}
+.check-box {
+    -fx-label-padding: 0 0 0 10;
+    -fx-cursor: hand;
+}
+.composition, .output {
+    -fx-padding: 18 20;
+}
+.valid {
+    -fx-text-fill: #86efac;
+    -fx-background-color: #143322;
+    -fx-background-radius: 999;
+    -fx-padding: 4 10;
+    -fx-font-size: 12px;
+}
+.progress-bar {
+    -fx-pref-height: 8;
+}
+.progress-bar .track {
+    -fx-background-color: #404040;
+    -fx-background-radius: 4;
+}
+.progress-bar .bar {
+    -fx-background-color: -primary-500;
+    -fx-background-insets: 0;
+    -fx-background-radius: 4;
+    -fx-padding: 4;
+}
+.capacity-warning .bar {
+    -fx-background-color: -yellow-400;
+}
+.button, .combo-box, .text-field {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-padding: 9 16;
+    -fx-border-color: -border-default;
+    -fx-background-color: -background-neutral;
+    -fx-min-height: 40;
+}
+.button {
+    -fx-cursor: hand;
+    -fx-text-fill: -foreground-brand;
+    -fx-border-color: -border-primary;
+    -fx-font-weight: bold;
+}
+.button:hover {
+    -fx-background-color: -background-primary;
+}
+.button:pressed {
+    -fx-background-color: -primary-900;
+}
+.button.primary {
+    -fx-background-color: -bg-btn-primary;
+    -fx-text-fill: -neutral-0;
+    -fx-border-color: transparent;
+}
+.button.primary:hover {
+    -fx-background-color: -primary-700;
+}
+.button.primary:pressed {
+    -fx-background-color: -primary-800;
+}
+.button:focused, .combo-box:focused, .text-field:focused {
+    -fx-border-color: -primary-500;
+    -fx-effect: null;
+}
+.button:disabled, .combo-box:disabled, .text-field:disabled, .check-box:disabled {
+    -fx-opacity: 0.5;
+}
+.text-field {
+    -fx-prompt-text-fill: -foreground-muted;
+    -fx-text-fill: -foreground-default;
+    -fx-highlight-fill: -primary-200;
+    -fx-highlight-text-fill: -primary-950;
+}
+.combo-box .list-cell {
+    -fx-text-fill: -foreground-default;
+    -fx-background-color: transparent;
+}
+.combo-box-popup .list-view {
+    -fx-background-color: -background-neutral;
+    -fx-border-color: -border-default;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-padding: 4;
+}
+.combo-box-popup .list-cell {
+    -fx-padding: 9 12;
+    -fx-background-radius: 6;
+}
+.combo-box-popup .list-cell:filled:selected {
+    -fx-background-color: -background-primary;
+    -fx-text-fill: -foreground-brand;
+}
+.combo-box-popup .list-cell:filled:hover {
+    -fx-background-color: -primary-900;
+}
+.footer {
+    -fx-padding: 8 32;
+    -fx-text-fill: -foreground-muted;
+    -fx-font-size: 10px;
+}
+
+/* Flat surfaces, including popup skins. Focus remains visible via primary borders. */
+.combo-box-popup .list-view, .scroll-pane, .button, .text-field {
+    -fx-effect: null;
+}
+
+/* Compact text tabs; mock tool contents remain blank. */
+.tool-tabs {
+    -fx-background-color: -background-default;
+    -fx-tab-min-height: 24;
+    -fx-tab-max-height: 24;
+    -fx-tab-min-width: 0;
+}
+.tool-tabs > .tab-header-area {
+    -fx-padding: 0 24 0 24;
+}
+.tool-tabs > .tab-header-area > .tab-header-background {
+    -fx-background-color: -background-neutral;
+    -fx-effect: null;
+}
+.tool-tabs .tab {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 2 0;
+    -fx-padding: 3 12;
+    -fx-cursor: hand;
+}
+.tool-tabs .tab:hover {
+    -fx-background-color: #303030;
+}
+.tool-tabs .tab:selected {
+    -fx-background-color: -background-primary;
+    -fx-border-color: -primary-400;
+}
+.tool-tabs .tab .focus-indicator {
+    -fx-border-color: transparent;
+    -fx-effect: null;
+}
+.tool-tabs:focused .tab:selected .focus-indicator {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+.mock-tool {
+    -fx-background-color: -background-default;
+}
+.tool-tabs .tab-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: -foreground-muted;
+}
+.tool-tabs .tab:selected .tab-label {
+    -fx-text-fill: -primary-400;
+}
+
+/* PRESET LIST: viewport height, row spacing and compact solid checkboxes. */
+.preset-scroll {
+    -fx-pref-height: 240;
+    -fx-max-height: 240;
+    -fx-min-height: 100;
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+.preset-scroll > .viewport {
+    -fx-background-color: -background-neutral;
+}
+.preset-row .check-box .box {
+    -fx-min-width: 16;
+    -fx-pref-width: 16;
+    -fx-max-width: 16;
+    -fx-min-height: 16;
+    -fx-pref-height: 16;
+    -fx-max-height: 16;
+    -fx-padding: 0;
+    -fx-background-radius: 3;
+    -fx-border-radius: 3;
+}
+.preset-row .check-box .mark {
+    -fx-shape: null;
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-opacity: 0;
+}
+
+/* ROM SELECTOR: compact native dropdown with an animated overlay chevron. */
+.rom-selector .combo-box {
+    -fx-cursor: hand;
+    -fx-padding: 0;
+}
+.rom-selector .combo-box > .list-cell {
+    -fx-padding: 9 16;
+}
+.rom-selector .combo-box > .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 16;
+    -fx-cursor: hand;
+}
+.rom-selector .combo-box > .arrow-button > .arrow {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+.rom-selector .combo-box:hover {
+    -fx-border-color: -primary-400;
+}
+.rom-chevron {
+    -fx-fill: transparent;
+    -fx-stroke: -foreground-muted;
+    -fx-stroke-width: 2;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+}
+.rom-selector:hover .rom-chevron {
+    -fx-stroke: -primary-400;
+}
+/* Input file states: muted placeholder until a file is chosen. */
+.button.target-input {
+    -fx-background-color: #143322;
+    -fx-border-color: #347b50;
+    -fx-text-fill: #86efac;
+    -fx-opacity: 1;
+}
+.button.target-input:empty {
+    -fx-background-color: #262626;
+    -fx-border-color: #525252;
+    -fx-text-fill: #a3a3a3;
+    -fx-opacity: 0.6;
+}
+.button.target-input:hover { -fx-border-color: #86efac; }
+.button.target-input:empty:hover { -fx-border-color: #a3a3a3; }
+.button.target-input:focused { -fx-border-color: -primary-400; }
+
+/* Success preview dialog: flat surfaces and a green status accent. */
+.success-dialog { -fx-background-color: -background-default; -fx-pref-width: 460; }
+.success-icon {
+    -fx-background-color: #143322;
+    -fx-background-radius: 24;
+    -fx-text-fill: #86efac;
+    -fx-font-size: 22px;
+    -fx-padding: 5 11;
+}
+.success-title { -fx-font-size: 21px; -fx-font-weight: bold; }
+.generated-files {
+    -fx-padding: 14 16;
+    -fx-background-color: -background-neutral;
+    -fx-background-radius: 8;
+    -fx-border-color: -border-default;
+    -fx-border-radius: 8;
+}
+.generated-file { -fx-font-family: "Consolas"; -fx-text-fill: #f0abc8; }
+/* Capacity colors reflect used / capacity: <70%, 70–90%, >=90%. */
+.capacity-available .bar { -fx-background-color: -green-400; }
+.capacity-critical .bar { -fx-background-color: -red-400; }

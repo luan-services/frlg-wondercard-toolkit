@@ -1,0 +1,6 @@
+/target/
+/.idea/
+*.iml
+INSTRUCTION.md
+PROJECT_HANDOFF.md
+/docs/*
