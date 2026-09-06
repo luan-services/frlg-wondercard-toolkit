@@ -1,7 +1,10 @@
 package com.choppy.desktop;
 
 import com.choppy.desktop.controller.PresetBuilderViewModel;
+import com.choppy.desktop.controller.InjectorViewModel;
 import com.choppy.desktop.service.RamscriptToolkitService;
+import com.choppy.desktop.service.Wc3InjectorService;
+import com.choppy.desktop.view.InjectorView;
 import com.choppy.desktop.view.PresetBuilderView;
 import com.choppy.desktop.view.ToolkitView;
 import javafx.application.Application;
@@ -16,8 +19,9 @@ public final class ToolkitApplication extends Application {
         double width = Math.min(1080, bounds.getWidth() * 0.92);
         double height = Math.min(820, bounds.getHeight() * 0.90);
         PresetBuilderViewModel model = new PresetBuilderViewModel(new RamscriptToolkitService());
-        stage.setOnHidden(event -> model.close());
-        Scene scene = new Scene(new ToolkitView(new PresetBuilderView(model)));
+        InjectorViewModel injector = new InjectorViewModel(new Wc3InjectorService());
+        stage.setOnHidden(event -> { model.close(); injector.close(); });
+        Scene scene = new Scene(new ToolkitView(new InjectorView(injector),new PresetBuilderView(model)));
         scene.getStylesheets().add(ToolkitApplication.class.getResource("/styles/app.css").toExternalForm());
         stage.setTitle("Choppy's FRLG Wondercard Toolkit");
         stage.setMinWidth(Math.min(700, width));
@@ -28,7 +32,7 @@ public final class ToolkitApplication extends Application {
         stage.setX(bounds.getMinX() + (bounds.getWidth() - width) / 2);
         stage.setY(bounds.getMinY() + (bounds.getHeight() - height) / 2);
         stage.show();
-        System.out.println("Preset Builder started successfully.");
+        System.out.println("FRLG Wondercard Toolkit started successfully.");
     }
     public static void main(String[] args) { launch(args); }
 }
