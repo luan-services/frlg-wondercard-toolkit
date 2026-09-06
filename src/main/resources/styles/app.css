@@ -443,3 +443,58 @@
 /* Capacity colors reflect used / capacity: <70%, 70–90%, >=90%. */
 .capacity-available .bar { -fx-background-color: -green-400; }
 .capacity-critical .bar { -fx-background-color: -red-400; }
+
+/* Integration details retain the compact tool typography. */
+.integration-details > .title {
+    -fx-font-size: 12px;
+    -fx-font-weight: normal;
+    -fx-background-color: -background-neutral;
+    -fx-padding: 8 10;
+}
+.integration-details > .content {
+    -fx-background-color: -background-neutral;
+    -fx-padding: 10;
+}
+.preset-sidebar { -fx-padding: 12; }
+.preset-sidebar .section-title { -fx-font-size: 12px; }
+.preset-sidebar .label { -fx-wrap-text: true; }
+
+.button.composition-action { -fx-padding: 4 8; -fx-min-height: 26; -fx-font-size: 11px; -fx-font-weight: normal; }
+
+.button.params-action {
+    -fx-background-color: #303030;
+    -fx-border-color: #525252;
+    -fx-text-fill: #d4d4d4;
+}
+.button.params-action:missing {
+    -fx-background-color: -red-950;
+    -fx-border-color: -red-400;
+    -fx-text-fill: -red-200;
+}
+.button.technical-action {
+    -fx-background-color: -green-950;
+    -fx-border-color: -green-800;
+    -fx-text-fill: -green-200;
+}
+.button.technical-action:hover { -fx-border-color: -green-400; }
+.toolkit-dialog { -fx-background-color: -background-default; }
+.dialog-card {
+    -fx-padding: 18;
+    -fx-spacing: 14;
+    -fx-background-color: -background-neutral;
+    -fx-border-color: -border-default;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+.artifact-code {
+    -fx-padding: 10 12;
+    -fx-background-color: #191919;
+    -fx-border-color: #3a3a3a;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+}
+.artifact-code-text {
+    -fx-font-family: 'Consolas';
+    -fx-font-size: 11px;
+    -fx-text-fill: #c9c9c9;
+}

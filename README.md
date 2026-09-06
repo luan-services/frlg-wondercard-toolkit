@@ -1,38 +1,43 @@
 ﻿# FRLG Wondercard Toolkit
 
-MVP visual desktop em Java 21, JavaFX 21 e Maven. Artefato Maven: `frlg-wondercard-toolkit`.
+A Java 21 / JavaFX desktop application for FireRed and LeafGreen Wonder Card tools.
 
-## Executar
+## Run
 
-Instale JDK 21 e Maven, disponibilize ambos no PATH e execute na raiz:
+Install JDK 21 and Maven and add them to PATH. Place the compatible toolkit JAR at `lib/ramscript-tools-api-v1.jar`, then run from the repository root:
 
 ```sh
 mvn javafx:run
 ```
 
-O primeiro uso exige internet para baixar dependências, incluindo JavaFX. Não é necessário instalar JavaFX separadamente.
+The first Maven run needs internet to download JavaFX, Gson and build dependencies. No separate JavaFX installation is needed. The toolkit uses JSON protocol v1; the JAR must support generic `--param` options and structured resource diagnostics.
+
+## Current features
+
+- Preset Composition uses the real toolkit catalog, parameters, validation and planner.
+- Choose a ROM, WC3 input and hotkey presets; required parameter fields appear from toolkit metadata.
+- Review actual memory usage, effective bindings/deployment and diagnostics.
+- Generate creates WC3s via the toolkit and shows the ordered artifacts and installation instructions.
+- Output selection specifies a destination/prefix. Each build creates a fresh subdirectory to preserve the base and existing outputs.
+- Injector and Builder tabs remain placeholders.
+
+This is still a pre-release. The app does not inject saves or modify ROMs. Toolkit gameplay support/validation is shown as reported; desktop tests do not establish hardware compatibility.
+
+## Build and tests
 
 ```sh
-mvn clean package
+mvn clean test
+mvn package
 ```
 
-Esse comando compila e passa pela fase de testes. Ainda não há testes automatizados. O JAR gerado não é um instalador nem um executável com Java incluído.
+Tests use the local toolkit JAR and synthetic temporary WC3 fixtures. JavaFX tests require a graphical environment and save a preview to `target/integration-ui.png`. Tests cover metadata, parameters, conflicts, real planning/builds, protocol errors and asynchronous UI state.
 
-## Estado atual
+The generated app JAR is not a standalone installer and does not include Java. Launch with Maven until packaged distributions are available.
 
-- Abas Injector e Builder vazias; Preset Composition contém o MVP.
-- Seleção de FireRed/LeafGreen EN 1.0/1.1, arquivo WC3 e onze presets.
-- Tema escuro sem sombras, primary rosa e paletas auxiliares no CSS.
-- Lista com rolagem, chevron animado e barras de capacidade com cores por utilização.
-- Generate abre uma prévia de sucesso com nomes fictícios; não gera arquivos.
+## Updating the toolkit
 
-Catálogo, validação, capacidades e hotkeys são mockados. Selecionar um arquivo não lê nem modifica seu conteúdo. Nenhuma dependência de ramscript-tools está integrada.
+Close the app, replace `lib/ramscript-tools-api-v1.jar`, and rerun the tests. The app uses the Java executable from its own JDK installation, runs toolkit requests in the background, and handles missing/incompatible JARs with a visible error and reconnect action.
 
-## Versionamento
+## Versioning
 
-O projeto está em `0.1.0-SNAPSHOT` (desenvolvimento). A primeira versão pode ser somente visual, desde que identificada como MVP mock. Commits registram mudanças; tags como `v0.1.0` marcam versões específicas; Releases podem acrescentar notas e instaladores. Ao publicar uma versão estável, alinhe a versão do POM e a tag. Não incluir `target/`, dependências baixadas ou arquivos pessoais de jogo no commit.
-
-## Documentação
-
-- [PROJECT_HANDOFF.md](PROJECT_HANDOFF.md): estado técnico e próximos passos.
-- [Solicitações de integração](docs/RAMSCRIPT_INTEGRATION_REQUESTS.md): leitura do toolkit e contrato proposto para o outro projeto.
+The project version is declared in `pom.xml`. Git tags such as `v0.1.0` mark releases; GitHub's pre-release flag identifies preview builds. Keep the POM and release tag aligned. Generated `target/` files and personal game files should not be committed.

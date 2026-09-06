@@ -1,7 +1,7 @@
 package com.choppy.desktop;
 
 import com.choppy.desktop.controller.PresetBuilderViewModel;
-import com.choppy.desktop.service.MockToolkitService;
+import com.choppy.desktop.service.RamscriptToolkitService;
 import com.choppy.desktop.view.PresetBuilderView;
 import com.choppy.desktop.view.ToolkitView;
 import javafx.application.Application;
@@ -15,7 +15,9 @@ public final class ToolkitApplication extends Application {
         Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
         double width = Math.min(1080, bounds.getWidth() * 0.92);
         double height = Math.min(820, bounds.getHeight() * 0.90);
-        Scene scene = new Scene(new ToolkitView(new PresetBuilderView(new PresetBuilderViewModel(new MockToolkitService()))));
+        PresetBuilderViewModel model = new PresetBuilderViewModel(new RamscriptToolkitService());
+        stage.setOnHidden(event -> model.close());
+        Scene scene = new Scene(new ToolkitView(new PresetBuilderView(model)));
         scene.getStylesheets().add(ToolkitApplication.class.getResource("/styles/app.css").toExternalForm());
         stage.setTitle("Choppy's FRLG Wondercard Toolkit");
         stage.setMinWidth(Math.min(700, width));
