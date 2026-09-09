@@ -124,6 +124,14 @@
 .body {
     -fx-padding: 18 32 0 32;
 }
+.builder-toolbar { -fx-padding: 12 16; }
+.builder-fields { -fx-padding: 18; -fx-background-color: -background-neutral; -fx-background-radius: 8; }
+.builder-preview { -fx-padding: 18; }
+.builder-fields .combo-box { -fx-pref-width: 190; }
+.builder-fields .text-field { -fx-padding: 9 16; }
+.builder-fields .text-field:invalid, .builder-fields .combo-box:invalid,
+.builder-fields .combo-box:invalid:hover { -fx-border-color: -red-400; -fx-background-color: -red-950; }
+.field-error { -fx-text-fill: -red-400; -fx-font-size: 11px; }
 .title {
     -fx-font-size: 29px;
     -fx-font-weight: bold;

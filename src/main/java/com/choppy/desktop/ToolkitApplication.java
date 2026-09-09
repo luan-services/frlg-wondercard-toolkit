@@ -2,6 +2,9 @@ package com.choppy.desktop;
 
 import com.choppy.desktop.controller.PresetBuilderViewModel;
 import com.choppy.desktop.controller.InjectorViewModel;
+import com.choppy.desktop.controller.BuilderViewModel;
+import com.choppy.desktop.service.Wc3BuilderService;
+import com.choppy.desktop.view.BuilderView;
 import com.choppy.desktop.service.RamscriptToolkitService;
 import com.choppy.desktop.service.Wc3InjectorService;
 import com.choppy.desktop.view.InjectorView;
@@ -20,8 +23,11 @@ public final class ToolkitApplication extends Application {
         double height = Math.min(820, bounds.getHeight() * 0.90);
         PresetBuilderViewModel model = new PresetBuilderViewModel(new RamscriptToolkitService());
         InjectorViewModel injector = new InjectorViewModel(new Wc3InjectorService());
-        stage.setOnHidden(event -> { model.close(); injector.close(); });
-        Scene scene = new Scene(new ToolkitView(new InjectorView(injector),new PresetBuilderView(model)));
+        BuilderViewModel cardBuilder = new BuilderViewModel(new Wc3BuilderService());
+        BuilderView builderView = new BuilderView(cardBuilder);
+        stage.setOnCloseRequest(event -> { if (!builderView.confirmDiscard()) event.consume(); });
+        stage.setOnHidden(event -> { model.close(); injector.close(); cardBuilder.close(); });
+        Scene scene = new Scene(new ToolkitView(new InjectorView(injector),new PresetBuilderView(model),builderView));
         scene.getStylesheets().add(ToolkitApplication.class.getResource("/styles/app.css").toExternalForm());
         stage.setTitle("Choppy's FRLG Wondercard Toolkit");
         stage.setMinWidth(Math.min(700, width));

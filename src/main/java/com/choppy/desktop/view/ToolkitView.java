@@ -13,6 +13,10 @@ public final class ToolkitView extends BorderPane {
     }
 
     public ToolkitView(InjectorView injector, PresetBuilderView builder) {
+        this(injector, builder, null);
+    }
+
+    public ToolkitView(InjectorView injector, PresetBuilderView builder, BuilderView cardBuilder) {
         // Keep the application branding outside the individual tool tabs.
         Node header = builder.getTop();
         builder.setTop(null);
@@ -22,7 +26,7 @@ public final class ToolkitView extends BorderPane {
         tabs.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         tabs.getTabs().addAll(
             new Tab("Transport", injector == null ? blank() : injector),
-            new Tab("Builder", blank()),
+            new Tab("Builder", cardBuilder == null ? blank() : cardBuilder),
             new Tab("Preset Composition", builder));
         tabs.getSelectionModel().select(injector == null ? 2 : 0);
         setCenter(tabs);

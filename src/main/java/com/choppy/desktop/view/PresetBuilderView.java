@@ -49,7 +49,7 @@ public final class PresetBuilderView extends BorderPane {
         scroll.setFitToHeight(true);
         scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         setCenter(scroll);
-        Label footer = styled("POKÉMON FIRERED / LEAFGREEN WONDERCARD TOOLKIT . Local workspace . v0.3.0", "footer");
+        Label footer = styled("POKÉMON FIRERED / LEAFGREEN WONDERCARD TOOLKIT . Local workspace . v1.0.0", "footer");
         ProgressBar activity = new ProgressBar();
         activity.setPrefWidth(110);
         activity.setMaxWidth(110);

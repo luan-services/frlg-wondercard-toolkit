@@ -4,7 +4,7 @@ A Java 21 / JavaFX desktop application for FireRed and LeafGreen Wonder Card too
 
 ## Run
 
-Install JDK 21 and Maven and add them to PATH. Place the compatible API JARs at `lib/ramscript-tools-api-v1.jar` and `lib/wc3-injector-api-v1.jar`, then run from the repository root:
+Install JDK 21 and Maven and add them to PATH. Place the compatible API JARs at `lib/ramscript-tools-api-v1.jar`, `lib/wc3-injector-api-v1.jar`, and `lib/wc3-builder-api-v1.jar`, then run from the repository root:
 
 ```sh
 mvn javafx:run
@@ -21,7 +21,10 @@ The first Maven run needs internet to download JavaFX, Gson and build dependenci
 - Output selection specifies a destination/prefix. Each build creates a fresh subdirectory to preserve the base and existing outputs.
 - The Transport tab inspects FR/LG saves, verifies WC3 files, injects into a selected save output, and extracts complete WC3 files.
 - Injector warnings for custom/research cards remain visible and non-blocking.
-- Celio-GB and distribution-ROM transports are visible as future options. Builder remains a placeholder.
+- Builder opens with the backend's default card and supports New, Open and Build. Build asks where to write the `.wc3` file and remembers the last selected destination during the session, including after New or Open.
+- Edit card text and metadata with catalog-driven selectors and searchable Pokémon icons. The official Mystery Gift question-mark icon is the default; Pokémon use their FR/LG internal species IDs.
+- The live Builder preview uses bundled FR/LG backgrounds, icons, stamp shadows and the stock Latin font. No ROM or runtime asset download is required.
+- Celio-GB and distribution-ROM transports are visible as future options.
 
 This is still a pre-release. Save injection always targets the output selected by the user; the source save is protected from being used as its own output. The app does not modify ROMs. Toolkit gameplay support/validation is shown as reported; desktop tests do not establish hardware compatibility.
 
@@ -32,7 +35,25 @@ mvn clean test
 mvn package
 ```
 
-Tests use both local API JARs and synthetic temporary fixtures. JavaFX tests require a graphical environment and save a preview to `target/integration-ui.png`. Tests cover metadata, parameters, conflicts, real planning/builds, injector verification/errors, protocol errors and asynchronous UI state.
+Tests use all three local API JARs and temporary fixtures. JavaFX tests require a graphical environment and save previews to `target/integration-ui.png`, `target/builder-ui.png`, `target/builder-ui-compact.png` and `target/builder-backgrounds.png`. Tests cover metadata, parameters, conflicts, real planning/builds, injector verification/errors, Builder defaults, raw icon preservation, safe saves, custom RamScript preservation, protocol errors and UI state.
+
+## Builder workflow
+
+Use Builder to save a base `.wc3`, then use it in Preset Composition to attach custom features, or inject it through Transport. A new card includes the builder backend's informational deliveryman script. Opening an existing card uses `inspect`; saving it uses `edit` so its existing RamScript survives. Save writes a temporary file next to the destination and atomically replaces the target only after a successful response. If the filesystem cannot replace atomically, saving reports an error and keeps the destination intact.
+
+New, Open and window close prompt before discarding unsaved changes. Backend text validation remains authoritative. The preview clips text at the stock window boundaries and supports the stock Latin glyphs; unsupported characters are marked in the preview. Player stamps and dynamic battle/trade statistics are not reconstructed from a WC3. Preview failures do not prevent editing or saving.
+
+### Preparing preview assets (developers only)
+
+Prepared resources are included under `src/main/resources/com/choppy/desktop/frlg/wondercard/`. To reproduce them on Windows:
+
+```powershell
+python -m venv target/asset-venv
+target/asset-venv/Scripts/python.exe -m pip install Pillow==12.1.1
+target/asset-venv/Scripts/python.exe scripts/fetch-frlg-wondercard-assets.py
+```
+
+The script fetches only required files from pinned `pret/pokefirered` revision `c75f352304d529f6ba92d4f74b9cf8b5c3810788`, caches them under `target/frlg-assets/`, and generates PNGs plus provenance and font metadata. Subsequent runs reuse that cache. Python, Pillow and network access are only needed for asset preparation, not for the application. See the bundled [asset provenance](src/main/resources/com/choppy/desktop/frlg/wondercard/ASSET_SOURCES.md).
 
 The generated app JAR is not a standalone installer and does not include Java. Launch with Maven until packaged distributions are available.
 
@@ -42,4 +63,4 @@ Close the app, replace the relevant versioned JAR under `lib/`, and rerun the te
 
 ## Versioning
 
-The project version is declared in `pom.xml`. The current preview line is `0.3.0`; tag it as `v0.3.0` and mark the GitHub release as a pre-release. Keep the POM and release tag aligned. Generated `target/` files and personal game files should not be committed.
+The project version is declared in `pom.xml`. The current preview line is `1.0.0`; tag it as `v1.0.0` and mark the GitHub release as a pre-release. Keep the POM and release tag aligned. Generated `target/` files and personal game files should not be committed.

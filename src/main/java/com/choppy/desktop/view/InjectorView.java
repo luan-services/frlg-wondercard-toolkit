@@ -26,7 +26,7 @@ public final class InjectorView extends BorderPane {
         ScrollPane scroll = new ScrollPane(body);
         scroll.setFitToWidth(true); scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         setCenter(scroll);
-        Label footer = label("POKÉMON FIRERED / LEAFGREEN WONDERCARD TOOLKIT . Local workspace . v0.3.0", "footer");
+        Label footer = label("POKÉMON FIRERED / LEAFGREEN WONDERCARD TOOLKIT . Local workspace . v1.0.0", "footer");
         ProgressBar activity = new ProgressBar();
         activity.setPrefWidth(110); activity.setMaxWidth(110);
         activity.visibleProperty().bind(vm.inspectingSave.or(vm.verifyingWc3).or(vm.transferring));
