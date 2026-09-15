@@ -91,7 +91,71 @@
     -fx-accent: -primary-600;
     -fx-focus-color: -primary-500;
     -fx-faint-focus-color: transparent;
+
+    /* Shared surface, content and interaction tokens. */
+    -surface-hover: #303030;
+    -border-row: #353535;
+    -text-secondary: #d4d4d4;
+    -surface-success: #143322;
+    -border-success: #347b50;
+    -text-success: #86efac;
+    -surface-empty: #262626;
+    -border-muted: #525252;
+    -text-placeholder: #a3a3a3;
+    -text-artifact: #f0abc8;
+    -surface-code: #191919;
+    -border-inset: #3a3a3a;
+    -text-code: #c9c9c9;
+    -surface-inset: #1d1d1d;
+    -text-result: #e5e5e5;
+    -track-background: #404040;
+    -surface-subtle: #ededed;
+    -border-subtle: #b8b8b8;
+    -surface-light-inset: #fafafa;
+    -surface-light-success: #f0fdf4;
+    -border-light-success: #86b99a;
+    -text-light-success: #166534;
+    -border-success-hover: #15803d;
+    -border-empty-hover: #737373;
+    -surface-accent-hover: #fce7f3;
+    -surface-accent-selected: #fdf2f8;
+    -track-light-background: #f3e5ed;
+    -capacity-available: #4ade80;
+    -capacity-warning: #facc15;
+    -capacity-critical: #f87171;
+    -surface-valid: #dcfce7;
+    -border-choice: #f9a8d4;
+    -surface-choice: #fff;
+    -focus-shadow: rgba(214,106,158,0.35);
 }
+
+/* Light theme overrides. Component colors below use looked-up tokens. */
+.root.light-theme {
+    -background-default: #fafafa;
+    -background-neutral: #ffffff;
+    -background-primary: -primary-50;
+    -foreground-default: #171717;
+    -foreground-muted: #626262;
+    -foreground-brand: -primary-700;
+    -primary-400: #f472b6;
+    -primary-500: #ec4899;
+    -primary-600: #db2777;
+    -primary-700: #c52670;
+    -primary-800: #a61e5d;
+    -primary-200: #fbcfe8;
+    -bg-btn-primary: -primary-600;
+    -border-default: #d4d4d4;
+    -border-primary: -primary-200;
+    -primary-900: #fce7f0;
+    -red-950: #fef2f2;
+    -red-200: #991b1b;
+    -red-400: #dc2626;
+    -green-950: #f0fdf4;
+    -green-200: #166534;
+    -green-400: #15803d;
+    -yellow-200: #854d0e;
+}
+
 .app, .scroll-pane, .scroll-pane > .viewport {
     -fx-background-color: -background-default;
 }
@@ -157,7 +221,7 @@
 }
 .columns {
     -fx-padding: 9 20;
-    -fx-background-color: #303030;
+    -fx-background-color: -surface-hover;
     -fx-font-size: 10px;
 }
 .columns .label {
@@ -165,13 +229,13 @@
 }
 .preset-row {
     -fx-padding: 10 20;
-    -fx-border-color: #353535 transparent transparent transparent;
+    -fx-border-color: -border-row transparent transparent transparent;
 }
 .preset-row:selected {
     -fx-background-color: -background-primary;
 }
 .preset-row:hover {
-    -fx-background-color: #303030;
+    -fx-background-color: -surface-hover;
 }
 .preset-row:selected:hover {
     -fx-background-color: -primary-900;
@@ -179,7 +243,7 @@
 .preset-row .label {
     -fx-font-family: "Consolas";
     -fx-font-size: 12px;
-    -fx-text-fill: #d4d4d4;
+    -fx-text-fill: -text-secondary;
 }
 .check-box .box {
     -fx-background-color: -background-neutral;
@@ -207,8 +271,8 @@
     -fx-padding: 18 20;
 }
 .valid {
-    -fx-text-fill: #86efac;
-    -fx-background-color: #143322;
+    -fx-text-fill: -text-success;
+    -fx-background-color: -surface-success;
     -fx-background-radius: 999;
     -fx-padding: 4 10;
     -fx-font-size: 12px;
@@ -217,7 +281,7 @@
     -fx-pref-height: 8;
 }
 .progress-bar .track {
-    -fx-background-color: #404040;
+    -fx-background-color: -track-background;
     -fx-background-radius: 4;
 }
 .progress-bar .bar {
@@ -329,7 +393,7 @@
     -fx-cursor: hand;
 }
 .tool-tabs .tab:hover {
-    -fx-background-color: #303030;
+    -fx-background-color: -surface-hover;
 }
 .tool-tabs .tab:selected {
     -fx-background-color: -background-primary;
@@ -416,27 +480,27 @@
 }
 /* Input file states: muted placeholder until a file is chosen. */
 .button.target-input {
-    -fx-background-color: #143322;
-    -fx-border-color: #347b50;
-    -fx-text-fill: #86efac;
+    -fx-background-color: -surface-success;
+    -fx-border-color: -border-success;
+    -fx-text-fill: -text-success;
     -fx-opacity: 1;
 }
 .button.target-input:empty {
-    -fx-background-color: #262626;
-    -fx-border-color: #525252;
-    -fx-text-fill: #a3a3a3;
+    -fx-background-color: -surface-empty;
+    -fx-border-color: -border-muted;
+    -fx-text-fill: -text-placeholder;
     -fx-opacity: 0.6;
 }
-.button.target-input:hover { -fx-border-color: #86efac; }
-.button.target-input:empty:hover { -fx-border-color: #a3a3a3; }
+.button.target-input:hover { -fx-border-color: -text-success; }
+.button.target-input:empty:hover { -fx-border-color: -text-placeholder; }
 .button.target-input:focused { -fx-border-color: -primary-400; }
 
 /* Success preview dialog: flat surfaces and a green status accent. */
 .success-dialog { -fx-background-color: -background-default; -fx-pref-width: 460; }
 .success-icon {
-    -fx-background-color: #143322;
+    -fx-background-color: -surface-success;
     -fx-background-radius: 24;
-    -fx-text-fill: #86efac;
+    -fx-text-fill: -text-success;
     -fx-font-size: 22px;
     -fx-padding: 5 11;
 }
@@ -448,7 +512,7 @@
     -fx-border-color: -border-default;
     -fx-border-radius: 8;
 }
-.generated-file { -fx-font-family: "Consolas"; -fx-text-fill: #f0abc8; }
+.generated-file { -fx-font-family: "Consolas"; -fx-text-fill: -text-artifact; }
 /* Capacity colors reflect used / capacity: <70%, 70–90%, >=90%. */
 .capacity-available .bar { -fx-background-color: -green-400; }
 .capacity-critical .bar { -fx-background-color: -red-400; }
@@ -471,9 +535,9 @@
 .button.composition-action { -fx-padding: 4 8; -fx-min-height: 26; -fx-font-size: 11px; -fx-font-weight: normal; }
 
 .button.params-action {
-    -fx-background-color: #303030;
-    -fx-border-color: #525252;
-    -fx-text-fill: #d4d4d4;
+    -fx-background-color: -surface-hover;
+    -fx-border-color: -border-muted;
+    -fx-text-fill: -text-secondary;
 }
 .button.params-action:missing {
     -fx-background-color: -red-950;
@@ -504,15 +568,15 @@
 }
 .artifact-code {
     -fx-padding: 10 12;
-    -fx-background-color: #191919;
-    -fx-border-color: #3a3a3a;
+    -fx-background-color: -surface-code;
+    -fx-border-color: -border-inset;
     -fx-background-radius: 6;
     -fx-border-radius: 6;
 }
 .artifact-code-text {
     -fx-font-family: 'Consolas';
     -fx-font-size: 11px;
-    -fx-text-fill: #c9c9c9;
+    -fx-text-fill: -text-code;
 }
 
 /* Wonder Card transport tab. */
@@ -552,17 +616,17 @@
 .primary-radio:selected > .radio > .dot { -fx-background-color: -primary-500; }
 .primary-radio:focused > .radio {
     -fx-border-color: -primary-400;
-    -fx-effect: dropshadow(gaussian, rgba(214,106,158,0.35), 5, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, -focus-shadow, 5, 0, 0, 0);
 }
-.preview-panel { -fx-padding: 12; -fx-background-color: #1d1d1d; -fx-background-radius: 7; -fx-border-color: #3a3a3a; -fx-border-radius: 7; }
+.preview-panel { -fx-padding: 12; -fx-background-color: -surface-inset; -fx-background-radius: 7; -fx-border-color: -border-inset; -fx-border-radius: 7; }
 .preview-row { -fx-alignment: top-left; }
 .preview-row > .preview-panel { -fx-pref-width: 0; }
 .file-path { -fx-text-fill: -foreground-muted; -fx-font-family: "Consolas"; }
 .warning-text { -fx-text-fill: -yellow-200; }
 .connection-error { -fx-text-fill: -red-200; -fx-font-size: 12px; }
 .status-badge {
-    -fx-text-fill: #86efac;
-    -fx-background-color: #143322;
+    -fx-text-fill: -text-success;
+    -fx-background-color: -surface-success;
     -fx-background-radius: 999;
     -fx-padding: 6 11;
     -fx-font-size: 11px;
@@ -573,5 +637,54 @@
 .transport-dialog .scroll-pane > .viewport { -fx-background-color: -background-default; }
 .transport-dialog .dialog-card { -fx-padding: 18; -fx-spacing: 14; }
 .transport-dialog > .button-bar > .container { -fx-padding: 10 12 12 12; }
-.result-details { -fx-padding: 14 16; -fx-background-color: #1d1d1d; -fx-background-radius: 7; -fx-border-color: #3a3a3a; -fx-border-radius: 7; }
-.result-value { -fx-font-family: "Consolas"; -fx-text-fill: #e5e5e5; }
+.result-details { -fx-padding: 14 16; -fx-background-color: -surface-inset; -fx-background-radius: 7; -fx-border-color: -border-inset; -fx-border-radius: 7; }
+.result-value { -fx-font-family: "Consolas"; -fx-text-fill: -text-result; }
+
+/* Theme control and light palette; game artwork retains its original colors. */
+.button.theme-toggle {
+    -fx-cursor: hand; -fx-padding: 4;
+    -fx-min-width: 28; -fx-pref-width: 28; -fx-max-width: 28;
+    -fx-min-height: 28; -fx-pref-height: 28; -fx-max-height: 28;
+}
+.theme-icon {
+    -fx-fill: transparent; -fx-stroke: -foreground-brand;
+    -fx-stroke-width: 2; -fx-stroke-line-cap: round; -fx-stroke-line-join: round;
+}
+
+.light-theme .columns, .light-theme .preset-row:hover,
+.light-theme .button.params-action { -fx-background-color: -surface-subtle; }
+.light-theme .preset-row { -fx-border-color: -text-result transparent transparent transparent; }
+.light-theme .preset-row .label, .light-theme .button.params-action,
+.light-theme .artifact-code-text, .light-theme .result-value { -fx-text-fill: -foreground-default; }
+.light-theme .button.params-action { -fx-border-color: -border-subtle; }
+.light-theme .button.params-action:missing {
+    -fx-background-color: -red-950; -fx-border-color: -red-400; -fx-text-fill: -red-200;
+}
+.light-theme .preset-row:selected { -fx-background-color: -background-primary; }
+.light-theme .preset-row:selected:hover { -fx-background-color: -primary-100; }
+.light-theme .artifact-code, .light-theme .preview-panel, .light-theme .result-details {
+    -fx-background-color: -surface-light-inset; -fx-border-color: -border-default;
+}
+.light-theme .generated-file { -fx-text-fill: -foreground-brand; }
+.light-theme .button.target-input, .light-theme .status-badge, .light-theme .success-icon {
+    -fx-background-color: -surface-light-success; -fx-border-color: -border-light-success; -fx-text-fill: -text-light-success;
+}
+.light-theme .button.target-input:empty {
+    -fx-background-color: -surface-subtle; -fx-border-color: -border-subtle; -fx-text-fill: -foreground-muted;
+}
+.light-theme .button.target-input:hover { -fx-border-color: -border-success-hover; }
+.light-theme .button.target-input:empty:hover { -fx-border-color: -border-empty-hover; }
+
+/* Light surfaces and vivid accents for navigation, capacities and status. */
+.light-theme .tool-tabs .tab:hover { -fx-background-color: -surface-accent-hover; }
+.light-theme .tool-tabs .tab:selected { -fx-background-color: -surface-accent-selected; -fx-border-color: -primary-400; }
+.light-theme .progress-bar .track { -fx-background-color: -track-light-background; }
+.light-theme .capacity-available .bar { -fx-background-color: -capacity-available; }
+.light-theme .capacity-warning .bar { -fx-background-color: -capacity-warning; }
+.light-theme .capacity-critical .bar { -fx-background-color: -capacity-critical; }
+.light-theme .valid { -fx-background-color: -surface-valid; -fx-text-fill: -text-light-success; }
+.light-theme .primary-radio > .radio { -fx-border-color: -border-choice; }
+.light-theme .primary-radio:selected > .radio { -fx-border-color: -primary-500; }
+.light-theme .check-box > .box { -fx-background-color: -surface-choice; -fx-border-color: -border-choice; }
+.light-theme .check-box:selected > .box { -fx-background-color: -surface-accent-hover; -fx-border-color: -primary-500; }
+.light-theme .check-box:selected > .box > .mark { -fx-background-color: -primary-500; }

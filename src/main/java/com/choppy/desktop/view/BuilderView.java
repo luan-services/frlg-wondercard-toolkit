@@ -92,7 +92,7 @@ public final class BuilderView extends BorderPane {
         editor.getRowConstraints().add(cardsRow);
         editor.add(scroll,0,0); editor.add(rightColumn,1,0);
         setCenter(editor); BorderPane.setMargin(editor,new Insets(0,32,0,32));
-        Label footer = label("POKÉMON FIRERED / LEAFGREEN WONDERCARD TOOLKIT . Local workspace . v1.0.1", "footer");
+        Label footer = label("POKÉMON FIRERED / LEAFGREEN WONDERCARD TOOLKIT . Local workspace . v1.1.0", "footer");
         ProgressBar activity = new ProgressBar();
         activity.setPrefWidth(110); activity.setMaxWidth(110);
         activity.visibleProperty().bind(vm.busy);

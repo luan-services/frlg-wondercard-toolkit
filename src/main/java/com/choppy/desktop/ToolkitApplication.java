@@ -29,6 +29,8 @@ public final class ToolkitApplication extends Application {
         stage.setOnHidden(event -> { model.close(); injector.close(); cardBuilder.close(); });
         Scene scene = new Scene(new ToolkitView(new InjectorView(injector),new PresetBuilderView(model),builderView));
         scene.getStylesheets().add(ToolkitApplication.class.getResource("/styles/app.css").toExternalForm());
+        AppTheme.initialize(scene);
+        stage.getIcons().add(new javafx.scene.image.Image(ToolkitApplication.class.getResource("/icons/logo.png").toExternalForm()));
         stage.setTitle("Choppy's FRLG Wondercard Toolkit");
         stage.setMinWidth(Math.min(700, width));
         stage.setMinHeight(Math.min(480, height));
