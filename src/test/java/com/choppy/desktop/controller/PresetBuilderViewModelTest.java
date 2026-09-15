@@ -154,9 +154,10 @@ class PresetBuilderViewModelTest {
                 var title=builderInput(stage,"Title");
                 title.replaceText(0,title.getLength(),"Hello @😀");
                 assertEquals("Hello ??",title.getText()); assertEquals(title.getText(),vm.field("title").get());
-                title.replaceText(0,title.getLength(),"W".repeat(40)); assertEquals("Hello ??",title.getText());
+                title.replaceText(0,title.getLength(),"W".repeat(40)); assertEquals("W".repeat(40),title.getText());
+                title.replaceText(0,title.getLength(),"W".repeat(41)); assertEquals("W".repeat(40),title.getText());
                 var subtitle=builderInput(stage,"Subtitle"); String previous=subtitle.getText();
-                subtitle.replaceText(0,subtitle.getLength(),"W".repeat(30)); assertEquals(previous,subtitle.getText());
+                subtitle.replaceText(0,subtitle.getLength(),"W".repeat(30)); assertEquals("W".repeat(30),subtitle.getText());
                 return null;
             });
             java.nio.file.Path output=java.nio.file.Files.createTempDirectory(java.nio.file.Path.of("target"),"builder-ui-test-").resolve("card.wc3");
@@ -176,6 +177,58 @@ class PresetBuilderViewModelTest {
     private static javafx.scene.control.TextField builderInput(Stage stage,String name) {
         return (javafx.scene.control.TextField)stage.getScene().getRoot().lookupAll(".text-field").stream()
             .filter(n -> name.equals(n.getAccessibleText())).findFirst().orElseThrow();
+    }
+    @Test void updatedPresetAndTransportDialogsUseTheRequestedPresentation() throws Exception {
+        PresetBuilderViewModel preset=fx(() -> new PresetBuilderViewModel(new RamscriptToolkitService()));
+        InjectorViewModel injector=fx(() -> new InjectorViewModel(new com.choppy.desktop.service.Wc3InjectorService()));
+        Stage stage=fx(() -> {
+            Stage window=new Stage();
+            Scene scene=new Scene(new PresetBuilderView(preset),1080,780);
+            scene.getStylesheets().add(getClass().getResource("/styles/app.css").toExternalForm());
+            window.setScene(scene); window.show(); return window;
+        });
+        try {
+            await(() -> preset.ready.get() && !preset.planning.get());
+            fx(() -> {
+                assertTrue(stage.getScene().getRoot().lookupAll(".invalid-badge").isEmpty());
+                assertTrue(stage.getScene().getRoot().lookupAll(".label").stream()
+                    .anyMatch(n -> n instanceof javafx.scene.control.Label l && l.getText().equals("Idle...")));
+                snapshot(stage,"target/preset-invalid.png");
+                return null;
+            });
+            Platform.runLater(() -> preset.result.set(new com.choppy.desktop.model.ToolkitData.BuildResult(
+                true,java.util.List.of(new com.choppy.desktop.model.ToolkitData.Artifact(1,"LOCAL_RUNTIME",
+                    java.nio.file.Path.of("target/example-composition/card.wc3").toAbsolutePath().toString(),1420)),
+                java.util.List.of("Inject the generated Wonder Card into your save."),java.util.List.of())));
+            await(() -> findDialog("Preset Composition")!=null);
+            fx(() -> { captureAndClose(findDialog("Preset Composition"),"target/preset-success.png",false); return null; });
+            fx(() -> {
+                stage.getScene().setRoot(new InjectorView(injector)); return null;
+            });
+            for (boolean injection : new boolean[]{true,false}) {
+                String title=injection ? "Wonder Card Injection" : "Wonder Card Extraction";
+                var output=new com.choppy.desktop.model.InjectorData.Artifact(
+                    java.nio.file.Path.of(injection ? "target/long folder name for generated saves/injected.sav" : "target/extracted.wc3").toAbsolutePath(),
+                    injection ? 131072 : 1420);
+                Platform.runLater(() -> injector.result.set(new com.choppy.desktop.model.InjectorData.TransferResult(
+                    injection,output,1,23,5,1003,injection ? "0x1234" : null,injection ? null : true,injection ? null : true,java.util.List.of())));
+                await(() -> findDialog(title)!=null);
+                fx(() -> { captureAndClose(findDialog(title),injection ? "target/injection-success.png" : "target/extraction-success.png",true); return null; });
+            }
+        } finally { fx(() -> { stage.close(); preset.close(); injector.close(); return null; }); }
+    }
+    private static Stage findDialog(String title) {
+        return (Stage)javafx.stage.Window.getWindows().stream()
+            .filter(w -> w instanceof Stage s && title.equals(s.getTitle())).findFirst().orElse(null);
+    }
+    private static void captureAndClose(Stage dialog,String path,boolean noScroll) throws Exception {
+        snapshot(dialog,path);
+        var pane=(javafx.scene.control.DialogPane)dialog.getScene().getRoot();
+        if (noScroll) {
+            assertTrue(pane.lookupAll(".scroll-pane").isEmpty());
+            assertTrue(pane.lookupAll(".success-icon").isEmpty());
+        }
+        ((Button)pane.lookupButton(pane.getButtonTypes().getFirst())).fire();
     }
     private static void snapshot(Stage stage,String path) throws Exception {
         stage.getScene().getRoot().applyCss(); stage.getScene().getRoot().layout();

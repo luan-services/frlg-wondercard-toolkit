@@ -125,6 +125,7 @@
     -fx-padding: 18 32 0 32;
 }
 .builder-toolbar { -fx-padding: 12 16; }
+.builder-toolbar:compact .button { -fx-padding: 9 9; -fx-font-size: 11px; }
 .builder-fields { -fx-padding: 18; -fx-background-color: -background-neutral; -fx-background-radius: 8; }
 .builder-preview { -fx-padding: 18; }
 .builder-fields .combo-box { -fx-pref-width: 190; }
@@ -480,11 +481,18 @@
     -fx-text-fill: -red-200;
 }
 .button.technical-action {
-    -fx-background-color: -green-950;
-    -fx-border-color: -green-800;
-    -fx-text-fill: -green-200;
+    -fx-background-color: -background-neutral;
+    -fx-border-color: -border-default;
+    -fx-text-fill: -foreground-muted;
 }
-.button.technical-action:hover { -fx-border-color: -green-400; }
+.button.technical-action:hover { -fx-border-color: -neutral-500; }
+.invalid-badge {
+    -fx-background-color: -red-950;
+    -fx-text-fill: -red-200;
+    -fx-background-radius: 999;
+    -fx-padding: 4 10;
+    -fx-font-size: 12px;
+}
 .toolkit-dialog { -fx-background-color: -background-default; }
 .dialog-card {
     -fx-padding: 18;

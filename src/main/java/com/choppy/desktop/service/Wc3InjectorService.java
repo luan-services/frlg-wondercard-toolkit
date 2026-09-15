@@ -12,7 +12,7 @@ public final class Wc3InjectorService implements InjectorService {
     private final Path jar;
     private final String java;
 
-    public Wc3InjectorService() { this(Path.of("lib/wc3-injector-api-v1.jar")); }
+    public Wc3InjectorService() { this(BackendPaths.resolve("wc3-injector-api-v1.jar")); }
     public Wc3InjectorService(Path jar) {
         this(jar, Path.of(System.getProperty("java.home"), "bin",
             System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win") ? "java.exe" : "java").toString());

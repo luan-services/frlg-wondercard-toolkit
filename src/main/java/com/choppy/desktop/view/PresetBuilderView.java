@@ -13,6 +13,7 @@ import java.io.File;
 
 public final class PresetBuilderView extends BorderPane {
     private final PresetBuilderViewModel vm;
+    private File lastOutputDirectory;
     private final VBox rows = new VBox();
     private final VBox composition = new VBox(16);
 
@@ -49,7 +50,7 @@ public final class PresetBuilderView extends BorderPane {
         scroll.setFitToHeight(true);
         scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         setCenter(scroll);
-        Label footer = styled("POKÉMON FIRERED / LEAFGREEN WONDERCARD TOOLKIT . Local workspace . v1.0.0", "footer");
+        Label footer = styled("POKÉMON FIRERED / LEAFGREEN WONDERCARD TOOLKIT . Local workspace . v1.0.1", "footer");
         ProgressBar activity = new ProgressBar();
         activity.setPrefWidth(110);
         activity.setMaxWidth(110);
@@ -139,17 +140,19 @@ public final class PresetBuilderView extends BorderPane {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Choose output prefix — files will be placed in a new subfolder");
         chooser.setInitialFileName("composition.wc3");
+        if (lastOutputDirectory != null && lastOutputDirectory.isDirectory()) chooser.setInitialDirectory(lastOutputDirectory);
         File output = chooser.showSaveDialog(getScene().getWindow());
-        if (output != null) vm.build(output.toPath());
+        if (output != null) { lastOutputDirectory = output.getAbsoluteFile().getParentFile(); vm.build(output.toPath()); }
     }
 
     private void showBuildResult(BuildResult result) {
         Dialog<Void> dialog = new Dialog<>();
         dialog.initOwner(getScene().getWindow());
-        dialog.setTitle(result.success() ? "Success!" : "Generation failed");
+        dialog.setTitle("Preset Composition");
         dialog.getDialogPane().getStylesheets().addAll(getScene().getStylesheets());
         dialog.getDialogPane().getStyleClass().add("success-dialog");
-        VBox content = new VBox(12, styled(result.success() ? "Success!" : "Generation failed", "success-title"));
+        VBox content = new VBox(12, styled("Preset Composition", "success-title"),
+            wrapped(result.success() ? "Wonder card generated successfully!" : "Wonder card generation failed."));
         for (Artifact artifact : result.artifacts()) {
             Label file = new Label(artifact.order() + ". " + artifact.role() + " · " + artifact.size() + " B\n" + artifact.path());
             file.setWrapText(true);
@@ -206,7 +209,9 @@ public final class PresetBuilderView extends BorderPane {
     private void renderComposition(Plan data) {
 
 
-        Label status = styled(vm.message.get(), data != null && data.valid() ? "valid" : "muted");
+        boolean idle = vm.selected.isEmpty();
+        Label status = styled(idle ? "Idle..." : vm.message.get(), idle || vm.planning.get() || vm.building.get() ? "muted"
+            : data != null ? (data.valid() ? "valid" : "invalid-badge") : "muted");
         status.setWrapText(true);
         Button params = compactButton("Requested params", () -> {
             renderParameters();
@@ -225,13 +230,13 @@ public final class PresetBuilderView extends BorderPane {
             else data.bindings().forEach(binding -> content.getChildren().add(wrapped(binding)));
             showDetails("Effective bindings", content);
         });
-        Button technical = compactButton("Technical details ▸", () -> {
+        Button technical = compactButton("Technical details", () -> {
             VBox content = new VBox(10);
             if (data == null || data.diagnostics().isEmpty()) content.getChildren().add(wrapped("No technical notes for this composition."));
             else data.diagnostics().forEach(d -> content.getChildren().add(wrapped(d.display())));
             showDetails("Technical details", content);
         });
-        technical.getStyleClass().add("technical-action");
+        technical.getStyleClass().add("params-action");
         HBox heading = new HBox(10, styled("Composition", "section-title"), params, bindings, spacer(), status, technical);
         heading.setAlignment(Pos.CENTER_LEFT);
         composition.getChildren().setAll(heading);

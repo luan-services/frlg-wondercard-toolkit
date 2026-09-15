@@ -12,7 +12,7 @@ import java.util.concurrent.*;
 public final class RamscriptToolkitService implements ToolkitService {
     private final Path jar;
     private final String java;
-    public RamscriptToolkitService() { this(Path.of("lib/ramscript-tools-api-v1.jar")); }
+    public RamscriptToolkitService() { this(BackendPaths.resolve("ramscript-tools-api-v1.jar")); }
     public RamscriptToolkitService(Path jar) {
         this(jar, Path.of(System.getProperty("java.home"), "bin",
             System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win") ? "java.exe" : "java").toString());

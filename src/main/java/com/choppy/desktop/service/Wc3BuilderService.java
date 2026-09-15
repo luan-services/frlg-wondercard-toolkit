@@ -11,7 +11,7 @@ import java.util.concurrent.*;
 public final class Wc3BuilderService implements BuilderService {
     private final Path jar;
     private final String java;
-    public Wc3BuilderService() { this(Path.of("lib/wc3-builder-api-v1.jar")); }
+    public Wc3BuilderService() { this(BackendPaths.resolve("wc3-builder-api-v1.jar")); }
     public Wc3BuilderService(Path jar) {
         this(jar, Path.of(System.getProperty("java.home"), "bin",
             System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win") ? "java.exe" : "java").toString());

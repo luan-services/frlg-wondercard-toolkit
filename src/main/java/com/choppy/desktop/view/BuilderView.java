@@ -45,12 +45,14 @@ public final class BuilderView extends BorderPane {
             (vm.source.get() == null ? "Untitled.wc3" : vm.source.get().getFileName().toString())
                 + (vm.dirty.get() ? " · Unsaved changes" : ""),vm.source,vm.dirty));
         file.setTooltip(new Tooltip());
-        file.setMinWidth(0);
+        file.setMinWidth(32);
         file.getTooltip().textProperty().bind(Bindings.createStringBinding(() -> vm.source.get() == null ? "New Wonder Card" : vm.source.get().toString(),vm.source));
         HBox actions = new HBox(8,fresh,open,build); actions.setAlignment(Pos.CENTER_LEFT);
         for (Button action : List.of(fresh,open,build)) action.setMinWidth(Region.USE_PREF_SIZE);
-        VBox toolbar = new VBox(6,actions,file);
+        HBox toolbar = new HBox(12,actions,spacer(),file);
+        toolbar.setAlignment(Pos.CENTER_LEFT);
         toolbar.getStyleClass().addAll("card","builder-toolbar");
+        toolbar.widthProperty().addListener((o,a,b) -> toolbar.pseudoClassStateChanged(PseudoClass.getPseudoClass("compact"),b.doubleValue()<350));
         VBox top = new VBox(heading); top.setPadding(new Insets(18,32,16,32)); setTop(top);
 
         form.getStyleClass().add("builder-fields"); form.setMinWidth(0);
@@ -77,17 +79,20 @@ public final class BuilderView extends BorderPane {
         checks.setTextAlignment(javafx.scene.text.TextAlignment.RIGHT);
         checks.visibleProperty().bind(checks.textProperty().isNotEmpty());
         checks.managedProperty().bind(checks.visibleProperty());
+        messages.setMaxWidth(420);
+        heading.getChildren().add(2,messages);
         GridPane editor = new GridPane(); editor.setHgap(16); editor.setVgap(16);
         ColumnConstraints settingsColumn = new ColumnConstraints(); settingsColumn.setPercentWidth(55);
         ColumnConstraints previewColumn = new ColumnConstraints(); previewColumn.setPercentWidth(45);
         editor.getColumnConstraints().addAll(settingsColumn,previewColumn);
-        VBox rightColumn=new VBox(14,previewScroll,toolbar,messages);
-        rightColumn.setMinWidth(0); rightColumn.setMinHeight(0); VBox.setVgrow(previewScroll,Priority.ALWAYS);
+        VBox rightColumn = new VBox(16,toolbar,previewScroll);
+        rightColumn.setMinWidth(0); rightColumn.setMinHeight(0);
+        VBox.setVgrow(previewScroll,Priority.ALWAYS);
         RowConstraints cardsRow = new RowConstraints(); cardsRow.setVgrow(Priority.ALWAYS); cardsRow.setMinHeight(0);
         editor.getRowConstraints().add(cardsRow);
         editor.add(scroll,0,0); editor.add(rightColumn,1,0);
         setCenter(editor); BorderPane.setMargin(editor,new Insets(0,32,0,32));
-        Label footer = label("POKÉMON FIRERED / LEAFGREEN WONDERCARD TOOLKIT . Local workspace . v0.4.0", "footer");
+        Label footer = label("POKÉMON FIRERED / LEAFGREEN WONDERCARD TOOLKIT . Local workspace . v1.0.1", "footer");
         ProgressBar activity = new ProgressBar();
         activity.setPrefWidth(110); activity.setMaxWidth(110);
         activity.visibleProperty().bind(vm.busy);
@@ -132,7 +137,7 @@ public final class BuilderView extends BorderPane {
         form.getChildren().add(pair(select("Send type","send",c.sendTypes()),stamps));
         form.getChildren().add(new Separator());
         form.getChildren().add(label("Card text","section-title"));
-        Label guidance=label("Each line must fit the game’s text area and " + c.limits().get("textFieldBytes") + "-byte field. Unsupported input becomes ?.","muted"); guidance.setWrapText(true);
+        Label guidance=label("Each line is limited to " + c.limits().get("textFieldBytes") + " characters. Unsupported input becomes ?.","muted"); guidance.setWrapText(true);
         form.getChildren().add(guidance);
         form.getChildren().addAll(input("Title","title"),input("Subtitle","subtitle"));
         for (int i=1;i<=4;i++) form.getChildren().add(input("Body "+i,"body"+i));
@@ -172,7 +177,7 @@ public final class BuilderView extends BorderPane {
                 String next=change.getControlNewText();
                 int limit=vm.catalog.get().limits().get("textFieldBytes");
                 // Always allow deletion to repair a pre-existing overlong field.
-                if (!textLayout.fits(key,next,limit) && next.length()>=change.getControlText().length()) return null;
+                if (next.codePointCount(0,next.length())>limit && next.length()>=change.getControlText().length()) return null;
             } catch (IllegalStateException missingAssets) { /* Backend remains available without preview resources. */ }
             return change;
         }));
@@ -194,10 +199,7 @@ public final class BuilderView extends BorderPane {
                 guidance=count+" / "+limit+" characters";
                 if (count>limit) error="This line exceeds the "+limit+"-character limit.";
                 try {
-                    int width=textLayout.width(value),max=textLayout.maxWidth(key);
-                    guidance+=" · "+width+" / "+max+" px";
                     if (!textLayout.supported(value)) error="Contains unsupported characters. Replace them with ?.";
-                    if (width>max) error="This line is too wide for the card ("+width+" / "+max+" px).";
                 } catch (IllegalStateException missingAssets) { /* Only backend validation is available. */ }
             } else {
                 try {

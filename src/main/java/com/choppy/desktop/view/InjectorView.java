@@ -26,7 +26,7 @@ public final class InjectorView extends BorderPane {
         ScrollPane scroll = new ScrollPane(body);
         scroll.setFitToWidth(true); scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         setCenter(scroll);
-        Label footer = label("POKÉMON FIRERED / LEAFGREEN WONDERCARD TOOLKIT . Local workspace . v1.0.0", "footer");
+        Label footer = label("POKÉMON FIRERED / LEAFGREEN WONDERCARD TOOLKIT . Local workspace . v1.0.1", "footer");
         ProgressBar activity = new ProgressBar();
         activity.setPrefWidth(110); activity.setMaxWidth(110);
         activity.visibleProperty().bind(vm.inspectingSave.or(vm.verifyingWc3).or(vm.transferring));
@@ -144,18 +144,17 @@ public final class InjectorView extends BorderPane {
 
     private void showResult(TransferResult result) {
         Dialog<Void> dialog = new Dialog<>();
-        dialog.setTitle(result.injection() ? "Injection complete" : "Extraction complete");
-        Label icon = label("✓","success-icon");
-        Label title = label(result.injection() ? "Wonder Card injected" : "Wonder Card extracted","success-title");
-        VBox heading = new VBox(3,title,label("Operation completed successfully.","muted"));
-        HBox hero = new HBox(12,icon,heading); hero.setAlignment(Pos.CENTER_LEFT);
+        dialog.setTitle(result.injection() ? "Wonder Card Injection" : "Wonder Card Extraction");
+
+        Label title = label(result.injection() ? "Wonder Card Injection" : "Wonder Card Extraction","success-title");
+        VBox hero = new VBox(12,title,label(result.injection() ? "Wonder card injected successfully!" : "Wonder card extracted successfully!","muted"));
         VBox details = new VBox(9,
             resultRow("OUTPUT",result.output().path().toString()),
             resultRow("SIZE",result.output().size() + " B"),
             resultRow("ACTIVE SLOT",Integer.toString(result.slotIndex())),
             resultRow("SAVE COUNTER",Long.toString(result.saveCounter())),
             resultRow("PHYSICAL SECTOR",Integer.toString(result.physicalSector())));
-        details.getStyleClass().add("result-details");
+        details.getStyleClass().add("artifact-code");
         VBox content = new VBox(16,hero,details);
         if (result.flagId() != null) details.getChildren().add(resultRow("FLAG ID",result.flagId().toString()));
         if (result.sectorChecksum() != null) details.getChildren().add(resultRow("SECTOR CHECKSUM",result.sectorChecksum()));
@@ -177,16 +176,23 @@ public final class InjectorView extends BorderPane {
         pane.getStyleClass().addAll("toolkit-dialog","transport-dialog");
         content.getStyleClass().add("dialog-card");
         VBox inset = new VBox(content); inset.setPadding(new Insets(12));
-        ScrollPane scroll = new ScrollPane(inset);
-        scroll.setFitToWidth(true); scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scroll.setPrefViewportWidth(520); scroll.setMaxHeight(560);
-        pane.setContent(scroll); pane.getButtonTypes().setAll(buttons);
-        pane.setPrefWidth(568);
+        pane.setContent(new StackPane(inset)); pane.getButtonTypes().setAll(buttons);
+        dialog.setResizable(true);
+        dialog.setOnShowing(event -> {
+            var owner = getScene().getWindow();
+            var screens = javafx.stage.Screen.getScreensForRectangle(owner.getX(),owner.getY(),owner.getWidth(),owner.getHeight());
+            var bounds = (screens.isEmpty() ? javafx.stage.Screen.getPrimary() : screens.getFirst()).getVisualBounds();
+            double width = Math.min(720,bounds.getWidth()-80);
+            pane.setPrefWidth(width);
+            pane.applyCss();
+            pane.setPrefHeight(inset.prefHeight(width-24)+80);
+        });
     }
 
     private static HBox resultRow(String name,String value) {
         Label key = label(name,"eyebrow"); key.setMinWidth(130);
-        Label text = wrapped(value); text.getStyleClass().add("result-value");
+        Label text = wrapped(value); text.getStyleClass().add("artifact-code-text");
+        text.setMinWidth(0); text.setMaxWidth(Double.MAX_VALUE); HBox.setHgrow(text,Priority.ALWAYS);
         HBox row = new HBox(12,key,text); row.setAlignment(Pos.TOP_LEFT); return row;
     }
 
