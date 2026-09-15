@@ -14,6 +14,8 @@ public final class InjectorData {
             String storedCardCrc, String calculatedCardCrc, boolean cardCrcValid,
             String storedRamScriptChecksum, String calculatedRamScriptChecksum,
             boolean ramScriptChecksumValid, List<Warning> warnings) {}
+    public record DistributionResult(Artifact output, String target, String baseSha1,
+            String outputSha1, List<Warning> warnings) {}
     public record Artifact(Path path, long size) {}
     public record TransferResult(boolean injection, Artifact output, int slotIndex,
             long saveCounter, int physicalSector, Integer flagId, String sectorChecksum,

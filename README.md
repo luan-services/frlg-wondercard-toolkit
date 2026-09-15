@@ -49,4 +49,4 @@ Close the app, replace the relevant versioned JAR under `lib/`, and rerun the te
 
 ## Versioning
 
-The project version is declared in `pom.xml`. The current preview line is `1.1.0`.
+The project version is declared in `pom.xml`. The current preview line is `1.2.0`.

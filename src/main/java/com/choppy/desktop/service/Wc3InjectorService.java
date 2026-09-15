@@ -56,11 +56,37 @@ public final class Wc3InjectorService implements InjectorService {
             wc3.get("cardCrcValid").getAsBoolean(), wc3.get("ramScriptChecksumValid").getAsBoolean(), warnings(result));
     }
 
+    @Override public DistributionResult buildDistribution(Path baseRom, Path wc3, Path output) {
+        requireFile(baseRom, ".gba", "Aurora Ticket Distribution ROM (USA)");
+        requireFile(wc3, ".wc3", "Wonder Card");
+        if (output == null || !output.toString().toLowerCase(Locale.ROOT).endsWith(".gba"))
+            throw new IllegalArgumentException("Select an output ROM with the .gba extension");
+        protectOutput(baseRom, output);
+        protectOutput(wc3, output);
+        return distributionResult(call("build-distribution", "--base-rom", absolute(baseRom),
+            "--wc3", absolute(wc3), "--output", absolute(output)));
+    }
+
+    static DistributionResult distributionResult(JsonObject result) {
+        return new DistributionResult(artifact(result), text(result,"target"), text(result,"baseSha1"),
+            text(result,"outputSha1"), warnings(result));
+    }
+
+    private static void requireFile(Path path, String extension, String label) {
+        if (path == null || !Files.isRegularFile(path) || !path.toString().toLowerCase(Locale.ROOT).endsWith(extension))
+            throw new IllegalArgumentException("Select an existing " + label + " (" + extension + ") file");
+    }
+
     private void protectOutput(Path input, Path output) {
-        if (input.toAbsolutePath().normalize().equals(output.toAbsolutePath().normalize()))
-            throw new IllegalArgumentException("Output must be different from the input save");
+        if (input.toAbsolutePath().normalize().equals(output.toAbsolutePath().normalize()) || sameFile(input,output))
+            throw new IllegalArgumentException("Output must be different from the input file");
         Path parent = output.toAbsolutePath().getParent();
         if (parent == null || !Files.isDirectory(parent)) throw new IllegalArgumentException("Output directory does not exist");
+    }
+
+    private static boolean sameFile(Path input, Path output) {
+        try { return Files.exists(output) && Files.isSameFile(input,output); }
+        catch (java.io.IOException error) { throw new IllegalArgumentException("Could not check output path",error); }
     }
 
     private JsonObject call(String... args) {
@@ -76,8 +102,19 @@ public final class Wc3InjectorService implements InjectorService {
             Future<String> stderr = readers.submit(() -> new String(running.getErrorStream().readAllBytes(), StandardCharsets.UTF_8));
             if (!process.waitFor(60, TimeUnit.SECONDS)) { process.destroyForcibly(); throw new IllegalStateException("Injector timed out"); }
             String body = stdout.get(5,TimeUnit.SECONDS);
-            stderr.get(5,TimeUnit.SECONDS);
-            return decodeResponse(body, process.exitValue());
+            String diagnostics = stderr.get(5,TimeUnit.SECONDS);
+            try {
+                JsonObject result = decodeResponse(body, process.exitValue());
+                if (!args[0].equals(optionalText(JsonParser.parseString(body).getAsJsonObject(),"command")))
+                    throw new IllegalStateException("Unexpected injector response command");
+                return result;
+            } catch (Exception error) {
+                String details = "Command: " + String.join(" ",command) + "\nExit code: " + process.exitValue()
+                    + "\n" + error.getMessage() + (diagnostics.isBlank() ? "" : "\nStderr: " + diagnostics);
+                if (error instanceof InjectorException injector)
+                    throw new InjectorException(injector.code(),details);
+                throw new IllegalStateException(details,error);
+            }
         } catch (InterruptedException error) {
             if (process != null) process.destroyForcibly();
             Thread.currentThread().interrupt();

@@ -11,6 +11,8 @@ import java.io.File;
 
 /** Wonder Card transport selector and save-file inject/extract workflows. */
 public final class InjectorView extends BorderPane {
+    private static final ButtonType CLOSE = new ButtonType("Close",ButtonBar.ButtonData.CANCEL_CLOSE);
+    public javafx.beans.binding.BooleanExpression activityProperty() { return vm.inspectingSave.or(vm.verifyingWc3).or(vm.transferring); }
     private final InjectorViewModel vm;
     private final VBox workflow = new VBox(16);
     private final Label operationBadge = label("","status-badge");
@@ -26,13 +28,6 @@ public final class InjectorView extends BorderPane {
         ScrollPane scroll = new ScrollPane(body);
         scroll.setFitToWidth(true); scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         setCenter(scroll);
-        Label footer = label("POKÉMON FIRERED / LEAFGREEN WONDERCARD TOOLKIT . Local workspace . v1.1.0", "footer");
-        ProgressBar activity = new ProgressBar();
-        activity.setPrefWidth(110); activity.setMaxWidth(110);
-        activity.visibleProperty().bind(vm.inspectingSave.or(vm.verifyingWc3).or(vm.transferring));
-        HBox footerRow = new HBox(12,footer,spacer(),activity);
-        footerRow.setAlignment(Pos.CENTER_LEFT); footerRow.setPadding(new Insets(0,24,0,0));
-        setBottom(footerRow);
         vm.mode.addListener((o,a,b) -> refresh());
         vm.saveFile.addListener((o,a,b) -> refresh());
         vm.wc3File.addListener((o,a,b) -> refresh());
@@ -43,6 +38,10 @@ public final class InjectorView extends BorderPane {
         vm.verifyingWc3.addListener((o,a,b) -> refresh());
         vm.transferring.addListener((o,a,b) -> refresh());
         vm.connectionMessage.addListener((o,a,b) -> refresh());
+        vm.baseRom.addListener((o,a,b) -> refresh());
+        vm.distributionOutput.addListener((o,a,b) -> refresh());
+        vm.distributionResult.addListener((o,a,b) -> { if (b != null) showDistributionResult(b); });
+        vm.distributionError.addListener((o,a,b) -> { if (b != null) showDistributionError(b); });
         vm.result.addListener((o,a,b) -> { refresh(); if (b != null) showResult(b); });
         refresh();
     }
@@ -63,17 +62,51 @@ public final class InjectorView extends BorderPane {
         RadioButton inject = transport("Inject into save file", null, group, Mode.INJECT, false);
         RadioButton extract = transport("Extract Wonder Card from save file", null, group, Mode.EXTRACT, false);
         RadioButton celio = transport("Receive via Celio's GB-Link", null, group, null, true);
-        RadioButton rom = transport("Generate distribution ROM", null, group, null, true);
+        RadioButton rom = transport("Generate distribution ROM", null, group, Mode.DISTRIBUTION, false);
         inject.setSelected(true);
         HBox options = new HBox(10,inject,extract,celio,rom);
         options.getStyleClass().add("transport-options");
-        VBox box = new VBox(10,label("Transport","section-title"),options);
+        Button help = new Button("Help");
+        help.getStyleClass().add("transport-help");
+        help.setAccessibleText("Help with Wonder Card transport methods");
+        help.setOnAction(e -> showTransportHelp());
+        HBox title = new HBox(12,label("Transport","section-title"),spacer(),help);
+        title.setAlignment(Pos.CENTER_LEFT);
+        VBox box = new VBox(10,title,options);
         box.getStyleClass().addAll("card","transport-card"); return box;
+    }
+
+    private void showTransportHelp() {
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.setTitle("Wonder Card Transport Help");
+        VBox content = new VBox(16,
+            label("Wonder Card Transport","success-title"),
+            helpSection("Injection",
+                "Adds a Wonder Card to a save file. First, extract the save from your cartridge using compatible cartridge backup hardware, or a Nintendo DS / DS Lite with an R4-compatible flashcart and suitable GBA save-backup homebrew. Guides for these methods are available online.",
+                "Select the extracted .sav and the .wc3 to inject. The toolkit creates a separate save file, which you then restore to your cartridge using your backup tool. Keep the original save as a backup."),
+            helpSection("Extraction",
+                "Uses the same cartridge save-backup methods described above. Select an existing .sav containing a Wonder Card to extract it into a .wc3 file.",
+                "The toolkit reports card and RamScript checksum warnings, so check the result before reusing the extracted card."),
+            helpSection("Generate distribution ROM",
+                "Choose this method for the original wireless distribution experience. You need two Game Boy Advance systems, a compatible Wireless Adapter for each system, and a writable GBA cartridge / flashcart for the generated ROM. The receiving system runs FireRed or LeafGreen.",
+                "Generation uses the official USA Aurora Ticket distribution ROM dump as its base. We do not provide this ROM; you must supply your own copy.",
+                "The generated ROM can send the supplied Wonder Card to western FireRed and LeafGreen releases across their supported languages and revisions. Japanese releases are not supported.",
+                "Custom RamScripts may depend on a particular game, revision or language. The sender's broad compatibility does not guarantee that every custom payload will work on every receiving game."));
+        configureDialog(dialog,content,CLOSE);
+        dialog.getDialogPane().lookupButton(CLOSE).getStyleClass().add("primary");
+        dialog.showAndWait();
+    }
+
+    private static VBox helpSection(String title, String... paragraphs) {
+        VBox section = new VBox(8,label(title,"section-title"));
+        for (String paragraph : paragraphs) section.getChildren().add(wrapped(paragraph));
+        return section;
     }
 
     private RadioButton transport(String title,String note,ToggleGroup group,Mode mode,boolean disabled) {
         RadioButton button = new RadioButton(note == null ? title : title + "  ·  " + note);
-        button.setToggleGroup(group); button.setDisable(disabled);
+        button.setToggleGroup(group);
+        button.disableProperty().bind(vm.transferring.or(new javafx.beans.property.SimpleBooleanProperty(disabled)));
         if (mode != null) button.setOnAction(e -> vm.mode.set(mode));
         button.getStyleClass().addAll("transport-option","primary-radio"); return button;
     }
@@ -81,6 +114,7 @@ public final class InjectorView extends BorderPane {
     private void refresh() {
         workflow.getChildren().clear();
         workflow.getStyleClass().setAll("card","transport-workflow");
+        if (vm.mode.get() == Mode.DISTRIBUTION) { renderDistribution(); return; }
         HBox workflowHeading = new HBox(10,
             label(vm.mode.get() == Mode.INJECT ? "Inject into save file" : "Extract Wonder Card from save file","section-title"),
             spacer(),operationBadge);
@@ -93,6 +127,81 @@ public final class InjectorView extends BorderPane {
         Button action = new Button(vm.transferring.get() ? "Working…" : vm.mode.get() == Mode.INJECT ? "Inject Wonder Card" : "Extract Wonder Card");
         action.getStyleClass().add("primary"); action.setDisable(!vm.canTransfer()); action.setOnAction(e -> chooseOutput());
         workflow.getChildren().add(action);
+    }
+
+    private void renderDistribution() {
+        HBox heading = new HBox(10,label("Generate distribution ROM","section-title"),spacer(),operationBadge);
+        heading.setAlignment(Pos.CENTER_LEFT);
+        workflow.getChildren().addAll(heading,
+            fileRow("Wonder Card",vm.wc3File.get(),"Select .wc3","Wonder Card (*.wc3)","*.wc3","*.WC3",vm.wc3File::set),
+            fileRow("Aurora Ticket Distribution ROM (USA)",vm.baseRom.get(),"Select .gba","GBA ROM (*.gba)","*.gba","*.GBA",vm.baseRom::set),
+            label("Original USA Aurora Ticket distribution ROM required.","muted"));
+        File output = vm.distributionOutput.get();
+        Button browse = new Button("Save as...");
+        browse.setDisable(vm.transferring.get());
+        browse.setOnAction(e -> chooseDistributionOutput());
+        Label path = wrapped(output == null ? "Select a Wonder Card to suggest a filename" : output.getAbsolutePath());
+        path.getStyleClass().add("file-path");
+        HBox outputRow = new HBox(14,new VBox(5,label("OUTPUT ROM","eyebrow"),path),spacer(),browse);
+        outputRow.setAlignment(Pos.CENTER_LEFT);
+        Button generate = new Button(vm.transferring.get() ? "Working..." : "Generate Distribution ROM");
+        generate.getStyleClass().add("primary"); generate.setDisable(!vm.canDistribute());
+        generate.setOnAction(e -> {
+            File target = vm.distributionOutput.get();
+            if (target != null && target.exists()) {
+                Dialog<ButtonType> confirm = new Dialog<>();
+                confirm.setTitle("Replace existing ROM?");
+                configureDialog(confirm,new VBox(12,wrapped("Replace this existing output file?"),wrapped(target.getAbsolutePath())),
+                    ButtonType.YES,ButtonType.CANCEL);
+                if (confirm.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.YES) return;
+            }
+            vm.generateDistribution();
+        });
+        workflow.getChildren().addAll(outputRow,generate);
+    }
+
+    private void chooseDistributionOutput() {
+        FileChooser picker = new FileChooser();
+        picker.setTitle("Save distribution ROM");
+        picker.getExtensionFilters().add(new FileChooser.ExtensionFilter("GBA ROM (*.gba)","*.gba"));
+        File current = vm.distributionOutput.get();
+        if (current != null) {
+            picker.setInitialFileName(current.getName());
+            if (current.getAbsoluteFile().getParentFile().isDirectory())
+                picker.setInitialDirectory(current.getAbsoluteFile().getParentFile());
+        }
+        File selected = picker.showSaveDialog(getScene().getWindow());
+        if (selected != null) vm.selectDistributionOutput(selected);
+    }
+
+    private void showDistributionResult(DistributionResult result) {
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.setTitle("Wonder Card Distribution");
+        VBox details = new VBox(9,resultRow("OUTPUT",result.output().path().toString()),
+            resultRow("SIZE",result.output().size() + " B"),resultRow("TARGET",result.target()),
+            resultRow("OUTPUT SHA-1",result.outputSha1()));
+        details.getStyleClass().add("artifact-code");
+        VBox content = new VBox(16,label("Wonder Card Distribution","success-title"),
+            label("Distribution ROM generated successfully!","muted"),details);
+        result.warnings().forEach(w -> content.getChildren().add(warning(w)));
+        configureDialog(dialog,content,CLOSE);
+        dialog.showAndWait();
+    }
+
+    private void showDistributionError(Exception error) {
+        String code = error instanceof com.choppy.desktop.service.Wc3InjectorService.InjectorException api ? api.code() : "";
+        String message = switch (code) {
+            case "INVALID_BASE_ROM" -> "Invalid base ROM. Please select the original USA Aurora Ticket Distribution ROM.";
+            case "INVALID_WC3" -> "Invalid Wonder Card. The selected file is not a valid WC3 file.";
+            case "IO_ERROR" -> "Could not create distribution ROM. Check the output location and file permissions.";
+            default -> error instanceof IllegalArgumentException ? error.getMessage() : "Distribution ROM generation failed.";
+        };
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.setTitle("Wonder Card Distribution");
+        TitledPane technical = new TitledPane("Technical details",wrapped(error.getMessage()));
+        technical.setExpanded(false); technical.getStyleClass().add("integration-details");
+        configureDialog(dialog,new VBox(16,label("Wonder Card Distribution","success-title"),wrapped(message),technical),CLOSE);
+        dialog.showAndWait();
     }
 
     private void renderPreviews() {

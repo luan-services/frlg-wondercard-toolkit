@@ -9,5 +9,8 @@ public interface InjectorService {
     SaveInspection inspectSave(Path input);
     Wc3Verification verifyWonderCard(Path input);
     TransferResult inject(Path inputSave, Path wc3, Path output);
+    default DistributionResult buildDistribution(Path baseRom, Path wc3, Path output) {
+        throw new UnsupportedOperationException("Distribution ROM generation is unavailable");
+    }
     TransferResult extract(Path inputSave, Path output);
 }

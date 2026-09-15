@@ -12,6 +12,7 @@ import javafx.stage.FileChooser;
 import java.io.File;
 
 public final class PresetBuilderView extends BorderPane {
+    public javafx.beans.binding.BooleanExpression activityProperty() { return vm.planning.or(vm.building); }
     private final PresetBuilderViewModel vm;
     private File lastOutputDirectory;
     private final VBox rows = new VBox();
@@ -50,16 +51,6 @@ public final class PresetBuilderView extends BorderPane {
         scroll.setFitToHeight(true);
         scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         setCenter(scroll);
-        Label footer = styled("POKÉMON FIRERED / LEAFGREEN WONDERCARD TOOLKIT . Local workspace . v1.1.0", "footer");
-        ProgressBar activity = new ProgressBar();
-        activity.setPrefWidth(110);
-        activity.setMaxWidth(110);
-        activity.visibleProperty().bind(vm.planning.or(vm.building));
-        // Keep the footer footprint fixed even when idle.
-        HBox footerRow = new HBox(12, footer, spacer(), activity);
-        footerRow.setAlignment(Pos.CENTER_LEFT);
-        footerRow.setPadding(new Insets(0, 24, 0, 0));
-        setBottom(footerRow);
     }
 
     // Header and tool introduction

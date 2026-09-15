@@ -127,6 +127,10 @@
     -border-choice: #f9a8d4;
     -surface-choice: #fff;
     -focus-shadow: rgba(214,106,158,0.35);
+    -help-background: -yellow-950;
+    -help-foreground: -yellow-200;
+    -help-border: -yellow-600;
+    -help-hover: -yellow-800;
 }
 
 /* Light theme overrides. Component colors below use looked-up tokens. */
@@ -154,6 +158,10 @@
     -green-200: #166534;
     -green-400: #15803d;
     -yellow-200: #854d0e;
+    -help-background: -yellow-50;
+    -help-foreground: -yellow-800;
+    -help-border: -yellow-500;
+    -help-hover: -yellow-400;
 }
 
 .app, .scroll-pane, .scroll-pane > .viewport {
@@ -688,3 +696,26 @@
 .light-theme .check-box > .box { -fx-background-color: -surface-choice; -fx-border-color: -border-choice; }
 .light-theme .check-box:selected > .box { -fx-background-color: -surface-accent-hover; -fx-border-color: -primary-500; }
 .light-theme .check-box:selected > .box > .mark { -fx-background-color: -primary-500; }
+.button.transport-help {
+    -fx-background-color: -help-background;
+    -fx-text-fill: -help-foreground;
+    -fx-border-color: -help-border;
+    -fx-min-height: 28;
+    -fx-padding: 4 12;
+}
+.button.transport-help:hover, .button.transport-help:pressed { -fx-background-color: -help-hover; }
+.button.transport-help:focused { -fx-border-color: -yellow-400; }
+/* The settings scroll container owns the single rounded card surface. */
+.builder-settings {
+    -fx-background-color: -background-neutral;
+    -fx-background-insets: 0;
+    -fx-padding: 1;
+}
+.builder-settings > .viewport {
+    -fx-background-color: -background-neutral;
+    -fx-background-radius: 7;
+}
+.builder-settings .builder-fields {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+}

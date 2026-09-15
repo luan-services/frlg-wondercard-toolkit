@@ -41,6 +41,21 @@ public final class ToolkitView extends BorderPane {
             new Tab("Preset Composition", builder));
         tabs.getSelectionModel().select(injector == null ? 2 : 0);
         setCenter(tabs);
+        javafx.beans.binding.BooleanExpression active = builder.activityProperty();
+        if (injector != null) active = active.or(injector.activityProperty());
+        if (cardBuilder != null) active = active.or(cardBuilder.activityProperty());
+        javafx.scene.control.Label footer = new javafx.scene.control.Label(
+            "POKÉMON FIRERED / LEAFGREEN WONDERCARD TOOLKIT . Local workspace . v1.2.0");
+        footer.getStyleClass().add("footer");
+        javafx.scene.control.ProgressBar activity = new javafx.scene.control.ProgressBar(-1);
+        activity.setPrefWidth(110); activity.setMaxWidth(110);
+        activity.visibleProperty().bind(active);
+        javafx.scene.layout.Region space = new javafx.scene.layout.Region();
+        javafx.scene.layout.HBox.setHgrow(space,javafx.scene.layout.Priority.ALWAYS);
+        javafx.scene.layout.HBox footerRow = new javafx.scene.layout.HBox(12,footer,space,activity);
+        footerRow.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        footerRow.setPadding(new javafx.geometry.Insets(0,24,0,0));
+        setBottom(footerRow);
     }
 
     /** Lucide moon/sun paths; license bundled in resources/icons/LUCIDE-LICENSE.txt. */

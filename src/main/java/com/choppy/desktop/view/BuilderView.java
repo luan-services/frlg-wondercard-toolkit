@@ -19,6 +19,8 @@ import java.util.*;
 
 /** Wonder Card editor, using the shared desktop visual vocabulary. */
 public final class BuilderView extends BorderPane {
+    private static final ButtonType CLOSE = new ButtonType("Close",ButtonBar.ButtonData.CANCEL_CLOSE);
+    public javafx.beans.binding.BooleanExpression activityProperty() { return vm.busy; }
     private final BuilderViewModel vm;
     private final VBox form = new VBox(12);
     private Path lastBuildDestination;
@@ -58,7 +60,7 @@ public final class BuilderView extends BorderPane {
         form.getStyleClass().add("builder-fields"); form.setMinWidth(0);
         form.disableProperty().bind(vm.busy.or(vm.ready.not()));
         ScrollPane scroll = new ScrollPane(form); scroll.setFitToWidth(true); scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scroll.getStyleClass().add("card"); scroll.setMinWidth(0);
+        scroll.getStyleClass().addAll("card","builder-settings"); scroll.setMinWidth(0);
         WonderCardPreview preview = new WonderCardPreview(vm);
         ScrollPane previewScroll = new ScrollPane(preview); previewScroll.setFitToWidth(true); previewScroll.setFitToHeight(true);
         previewScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -92,13 +94,6 @@ public final class BuilderView extends BorderPane {
         editor.getRowConstraints().add(cardsRow);
         editor.add(scroll,0,0); editor.add(rightColumn,1,0);
         setCenter(editor); BorderPane.setMargin(editor,new Insets(0,32,0,32));
-        Label footer = label("POKÉMON FIRERED / LEAFGREEN WONDERCARD TOOLKIT . Local workspace . v1.1.0", "footer");
-        ProgressBar activity = new ProgressBar();
-        activity.setPrefWidth(110); activity.setMaxWidth(110);
-        activity.visibleProperty().bind(vm.busy);
-        HBox footerRow = new HBox(12,footer,spacer(),activity);
-        footerRow.setAlignment(Pos.CENTER_LEFT); footerRow.setPadding(new Insets(0,24,0,0));
-        setBottom(footerRow);
         vm.catalog.addListener((o,a,b) -> buildForm(b));
         vm.revision.addListener((o,a,b) -> validateFields());
         vm.result.addListener((o,a,b) -> { if (b!=null) showBuildResult(b); });
@@ -243,8 +238,8 @@ public final class BuilderView extends BorderPane {
         VBox inset=new VBox(content); inset.setPadding(new Insets(12));
         ScrollPane body=new ScrollPane(inset); body.setFitToWidth(true); body.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         body.setPrefViewportWidth(480); body.setPrefViewportHeight(340);
-        pane.setContent(body); pane.getButtonTypes().add(ButtonType.CLOSE);
-        pane.lookupButton(ButtonType.CLOSE).getStyleClass().add("primary");
+        pane.setContent(body); pane.getButtonTypes().add(CLOSE);
+        pane.lookupButton(CLOSE).getStyleClass().add("primary");
         dialog.showAndWait();
     }
     private static HBox pair(Node a,Node b) { HBox row=new HBox(12,a,b); HBox.setHgrow(a,Priority.ALWAYS); HBox.setHgrow(b,Priority.ALWAYS); return row; }

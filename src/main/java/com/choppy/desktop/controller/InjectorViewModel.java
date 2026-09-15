@@ -10,11 +10,17 @@ import java.util.concurrent.*;
 
 /** Owns asynchronous state for the save-file transport tab. */
 public final class InjectorViewModel implements AutoCloseable {
-    public enum Mode { INJECT, EXTRACT }
+    public enum Mode { INJECT, EXTRACT, DISTRIBUTION }
     private final InjectorService service;
     private final ExecutorService worker = Executors.newSingleThreadExecutor(r -> {
         Thread thread = new Thread(r,"wc3-injector-worker"); thread.setDaemon(true); return thread;
     });
+    private final java.util.prefs.Preferences preferences = java.util.prefs.Preferences.userNodeForPackage(com.choppy.desktop.AppTheme.class);
+    public final ObjectProperty<File> baseRom = new SimpleObjectProperty<>();
+    public final ObjectProperty<File> distributionOutput = new SimpleObjectProperty<>();
+    public final ObjectProperty<DistributionResult> distributionResult = new SimpleObjectProperty<>();
+    public final ObjectProperty<Exception> distributionError = new SimpleObjectProperty<>();
+    private boolean customDistributionOutput;
     private long saveRevision;
     private long wc3Revision;
     private boolean closed;
@@ -34,6 +40,19 @@ public final class InjectorViewModel implements AutoCloseable {
 
     public InjectorViewModel(InjectorService service) {
         this.service = service;
+        String savedBase = preferences.get("distributionBaseRom","");
+        if (!savedBase.isBlank()) {
+            File file = new File(savedBase);
+            if (file.isFile()) baseRom.set(file); else preferences.remove("distributionBaseRom");
+        }
+        baseRom.addListener((o,a,b) -> {
+            if (b == null) preferences.remove("distributionBaseRom");
+            else preferences.put("distributionBaseRom",b.getAbsolutePath());
+        });
+        wc3File.addListener((o,a,b) -> {
+            if (!customDistributionOutput) distributionOutput.set(b == null ? null :
+                new File(b.getParentFile(),b.getName().replaceFirst("(?i)\\.wc3$","") + "-distribution.gba"));
+        });
         saveFile.addListener((o,a,b) -> inspect(b));
         wc3File.addListener((o,a,b) -> verify(b));
         mode.addListener((o,a,b) -> { result.set(null); operationMessage.set(""); });
@@ -88,7 +107,43 @@ public final class InjectorViewModel implements AutoCloseable {
         });
     }
 
+    public void selectDistributionOutput(File file) {
+        customDistributionOutput = true;
+        distributionOutput.set(file);
+    }
+
+    public boolean canDistribute() {
+        return connected.get() && !transferring.get() && !verifyingWc3.get()
+            && baseRom.get() != null && baseRom.get().isFile()
+            && wc3File.get() != null && wc3File.get().isFile()
+            && distributionOutput.get() != null;
+    }
+
+    public void generateDistribution() {
+        if (!canDistribute()) return;
+        Path base = baseRom.get().toPath(), card = wc3File.get().toPath(), output = distributionOutput.get().toPath();
+        distributionResult.set(null); distributionError.set(null); transferring.set(true);
+        operationMessage.set("Generating distribution ROM...");
+        worker.submit(() -> {
+            try {
+                DistributionResult completed = service.buildDistribution(base,card,output);
+                Platform.runLater(() -> { if (!closed) {
+                    transferring.set(false);
+                    operationMessage.set("Distribution ROM generated successfully");
+                    distributionResult.set(completed);
+                }});
+            } catch (Exception error) {
+                Platform.runLater(() -> { if (!closed) {
+                    transferring.set(false);
+                    operationMessage.set("Distribution ROM generation failed");
+                    distributionError.set(error);
+                }});
+            }
+        });
+    }
+
     public boolean canTransfer() {
+        if (mode.get() == Mode.DISTRIBUTION) return false;
         if (!connected.get() || transferring.get() || inspectingSave.get() || saveInspection.get() == null
                 || saveInspection.get().activeSlot() == null) return false;
         return mode.get() == Mode.EXTRACT || (!verifyingWc3.get() && wc3Verification.get() != null);

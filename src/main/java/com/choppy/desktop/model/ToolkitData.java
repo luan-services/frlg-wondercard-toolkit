@@ -2,7 +2,6 @@ package com.choppy.desktop.model;
 
 import java.util.List;
 import java.util.Map;
-import java.nio.file.Path;
 
 /** Transport-independent data consumed by the desktop UI. */
 public final class ToolkitData {
